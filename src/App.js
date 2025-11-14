@@ -1,41 +1,22 @@
 import React, { useState } from 'react';
-import { scheduleData, sportCategories, statusColors } from './data/scheduleData';
 import './App.css';
+
 function App() {
-  const [selectedSport, setSelectedSport] = useState('All');
+  const [selectedDate, setSelectedDate] = useState('1114');
 
-  const getFilteredEvents = () => {
-    if (selectedSport === 'All') {
-      return scheduleData;
-    }
-    
-    return scheduleData.map(dayData => ({
-      ...dayData,
-      events: dayData.events.filter(event => event.sport === selectedSport)
-    })).filter(dayData => dayData.events.length > 0);
-  };
+  // 日期配置 (文件名 => 显示信息)
+  const dates = [
+    { id: '1114', label: '11月14日', fullLabel: '11月14日 星期五' },
+    { id: '1115', label: '11月15日', fullLabel: '11月15日 星期六' },
+    { id: '1116', label: '11月16日', fullLabel: '11月16日 星期日' },
+    { id: '1117', label: '11月17日', fullLabel: '11月17日 星期一' },
+    { id: '1118', label: '11月18日', fullLabel: '11月18日 星期二' },
+    { id: '1119', label: '11月19日', fullLabel: '11月19日 星期三' },
+    { id: '1120', label: '11月20日', fullLabel: '11月20日 星期四' }
+  ];
 
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    return `${month}/${day}`;
-  };
-
-  const filteredData = getFilteredEvents();
-
-  const getDayNameCN = (day) => {
-    const dayNames = {
-      'Sunday': '星期日',
-      'Monday': '星期一',
-      'Tuesday': '星期二',
-      'Wednesday': '星期三',
-      'Thursday': '星期四',
-      'Friday': '星期五',
-      'Saturday': '星期六'
-    };
-    return dayNames[day] || day;
-  };
+  // 获取当前选中日期的信息
+  const currentDateInfo = dates.find(d => d.id === selectedDate);
 
   return (
     <div className="app">
@@ -46,84 +27,34 @@ function App() {
         </div>
       </header>
 
-      <nav className="sport-filter">
-        <div className="filter-title">选择运动项目</div>
-        <div className="filter-buttons">
-          {sportCategories.map(sport => (
+      {/* 日期tab切换 */}
+      <nav className="date-tabs">
+        <div className="tabs-container">
+          {dates.map(date => (
             <button
-              key={sport}
-              className={`filter-btn ${selectedSport === sport ? 'active' : ''}`}
-              onClick={() => setSelectedSport(sport)}
+              key={date.id}
+              className={`date-tab ${selectedDate === date.id ? 'active' : ''}`}
+              onClick={() => setSelectedDate(date.id)}
             >
-              {sport === 'All' ? '全部' : sport}
+              {date.label}
             </button>
           ))}
         </div>
       </nav>
 
       <main className="schedule-container">
-        {filteredData.length === 0 ? (
-          <div className="empty-state">
-            <p>暂无赛程</p>
-          </div>
-        ) : (
-          filteredData.map(dayData => (
-            <section key={dayData.date} className="day-section">
-              <div className="day-header">
-                <div className="date-info">
-                  <span className="date">{formatDate(dayData.date)}</span>
-                  <span className="day">{getDayNameCN(dayData.day)}</span>
-                </div>
-              </div>
-
-              <div className="events-list">
-                {dayData.events.map(event => (
-                  <div key={event.id} className="event-card">
-                    <div className="event-header">
-                      <div className="event-info">
-                        <h3 className="event-title">{event.event}</h3>
-                        <p className="event-sport">{event.sport}</p>
-                      </div>
-                      <div className="event-status">
-                        <span
-                          className="status-badge"
-                          style={{ backgroundColor: statusColors[event.status] }}
-                        >
-                          {event.status === 'Completed' ? '已完成' :
-                           event.status === 'Scheduled' ? '待进行' :
-                           event.status === 'Ongoing' ? '进行中' : '已取消'}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="event-details">
-                      <div className="detail-item">
-                        <span className="label">⏰ 时间</span>
-                        <span className="value">{event.time}</span>
-                      </div>
-                      <div className="detail-item">
-                        <span className="label">📍 场馆</span>
-                        <span className="value">{event.venue}</span>
-                      </div>
-                      {event.status === 'Completed' && (
-                        <>
-                          <div className="detail-item">
-                            <span className="label">🥇 金牌</span>
-                            <span className="value">{event.goldMedal}</span>
-                          </div>
-                          <div className="detail-item">
-                            <span className="label">⚡ 成绩</span>
-                            <span className="value record">{event.record}</span>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))
-        )}
+        <div className="date-header">
+          <h2>{currentDateInfo?.fullLabel}</h2>
+        </div>
+        
+        {/* 显示赛程图片 */}
+        <div className="schedule-image-wrapper">
+          <img 
+            src={`/${selectedDate}.jpg`} 
+            alt={`${selectedDate}赛程`}
+            className="schedule-image"
+          />
+        </div>
       </main>
 
       <footer className="app-footer">
