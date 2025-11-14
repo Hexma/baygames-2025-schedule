@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import './App.css';
 
 function App() {
-  const [selectedDate, setSelectedDate] = useState('1114');
-
   // 日期配置 (文件名 => 显示信息)
   const dates = [
     { id: '1114', label: '11月14日', fullLabel: '11月14日 星期五' },
@@ -14,6 +12,23 @@ function App() {
     { id: '1119', label: '11月19日', fullLabel: '11月19日 星期三' },
     { id: '1120', label: '11月20日', fullLabel: '11月20日 星期四' }
   ];
+
+  // 根据当前日期自动选择对应的tab
+  const getInitialDate = () => {
+    const today = new Date();
+    const month = today.getMonth() + 1; // 月份 (1-12)
+    const day = today.getDate(); // 日期 (1-31)
+    
+    // 检查是否在11月14-20日范围内
+    if (month === 11 && day >= 14 && day <= 20) {
+      return `11${day}`; // 返回格式如 1114, 1115, ...
+    }
+    
+    // 如果不在范围内，默认返回11月14日
+    return '1114';
+  };
+
+  const [selectedDate, setSelectedDate] = useState(getInitialDate);
 
   // 获取当前选中日期的信息
   const currentDateInfo = dates.find(d => d.id === selectedDate);
